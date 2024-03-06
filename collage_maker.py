@@ -63,5 +63,5 @@ if __name__ == "__main__":
         output_name = sys.argv[2]
         if not output_name.lower().endswith('.jpg'):
             output_name += '.jpg'
-
-    create_collage(folder_path, output_name)
+        create_collage(folder_path, output_name)
+    else: create_collage(folder_path)
