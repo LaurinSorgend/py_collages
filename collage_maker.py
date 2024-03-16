@@ -72,13 +72,13 @@ def create_collage(
             draw = ImageDraw.Draw(img)
             font = ImageFont.truetype(
                 "arial.ttf", number_font_size
-            )  # You may need to adjust the font path
+            ) 
             number_str = str(resized_images.index(img) + 1)
             text_width, text_height = draw.textsize(number_str, font=font)
             position = (
                 median_width - text_width - 10,
                 median_height - text_height - 10,
-            )  # Bottom-right corner, adjust as needed
+            )  
             draw.text(position, number_str, fill=number_color, font=font)
         collage.paste(img, (x_offset, y_offset))
         x_offset += median_width + border_thickness
