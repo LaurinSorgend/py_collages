@@ -4,25 +4,19 @@ import sys
 
 import numpy as np
 from PIL import Image
-
-
-def parse_border(border_args):
-    if border_args:
-        thickness, color = border_args
-        if thickness.endswith("%"):
-            # Convert percentage to decimal
-            thickness = float(thickness.strip("%")) / 100
-        else:
-            thickness = float(thickness)
-        return thickness, color
-    return 0, ""
+from PIL import ImageDraw, ImageFont
 
 
 def create_collage(
-    folder_path, output_name="collage.jpg", border_args=None, rows=None, columns=None
+    folder_path,
+    output_name="collage.jpg",
+    border_args=None,
+    rows=None,
+    columns=None,
+    number_images=False,
+    number_font_size=30,
+    number_color="white",
 ):
-    border_thickness, border_color = parse_border(border_args)
-
     extensions = (".png", ".jpg", ".jpeg")
     images = [
         os.path.join(folder_path, f)
@@ -38,11 +32,12 @@ def create_collage(
     median_width = int(np.median([img.size[0] for img in loaded_images]))
     median_height = int(np.median([img.size[1] for img in loaded_images]))
 
-    if isinstance(
-        border_thickness, float
-    ):  # If border thickness is given as a percentage
-        border_thickness = int(max(median_width, median_height) * border_thickness)
+    border_thickness = 0
+    border_color = "white"
 
+    if border_args:
+        border_thickness = int(border_args[0])
+        border_color = border_args[1]
     resized_images = [
         img.resize((median_width, median_height), Image.Resampling.LANCZOS)
         for img in loaded_images
@@ -73,6 +68,18 @@ def create_collage(
 
     x_offset, y_offset = 0, 0
     for img in resized_images:
+        if number_images:
+            draw = ImageDraw.Draw(img)
+            font = ImageFont.truetype(
+                "arial.ttf", number_font_size
+            )  # You may need to adjust the font path
+            number_str = str(resized_images.index(img) + 1)
+            text_width, text_height = draw.textsize(number_str, font=font)
+            position = (
+                median_width - text_width - 10,
+                median_height - text_height - 10,
+            )  # Bottom-right corner, adjust as needed
+            draw.text(position, number_str, fill=number_color, font=font)
         collage.paste(img, (x_offset, y_offset))
         x_offset += median_width + border_thickness
         if x_offset >= collage_width:
@@ -107,7 +114,7 @@ if __name__ == "__main__":
         "--border",
         nargs=2,
         metavar=("THICKNESS", "COLOR"),
-        help="Add a border between images with specified thickness (in pixels or percentage, e.g., '5' or '2%%') and color (e.g., 'black', '#FFF').",
+        help="Add a border between images with specified thickness (in pixels) and color (e.g., 'black', '#FFF').",
     )
     parser.add_argument(
         "-r", "--rows", type=int, help="Custom number of rows for the collage."
@@ -115,10 +122,36 @@ if __name__ == "__main__":
     parser.add_argument(
         "-c", "--columns", type=int, help="Custom number of columns for the collage."
     )
-
+    parser.add_argument(
+        "-n",
+        "--number",
+        action="store_true",
+        help="Enable numbering of images in the collage.",
+    )
+    parser.add_argument(
+        "--number_font_size",
+        type=int,
+        default=30,
+        help="Font size for numbering images. Default is 30.",
+    )
+    parser.add_argument(
+        "--number_color",
+        type=str,
+        default="white",
+        help="Color of the numbers. Default is 'white'.",
+    )
     args = parser.parse_args()
 
     if not args.output_name.lower().endswith(".jpg"):
         args.output_name += ".jpg"
 
-    create_collage(args.folder_path, args.output_name, args.border, args.rows, args.columns)
+    create_collage(
+        args.folder_path,
+        args.output_name,
+        args.border,
+        args.rows,
+        args.columns,
+        args.number,
+        args.number_font_size,
+        args.number_color,
+    )
