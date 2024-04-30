@@ -129,12 +129,14 @@ if __name__ == "__main__":
         help="Enable numbering of images in the collage.",
     )
     parser.add_argument(
+        "-fs",
         "--number_font_size",
         type=int,
         default=30,
         help="Font size for numbering images. Default is 30.",
     )
     parser.add_argument(
+        "-nc",
         "--number_color",
         type=str,
         default="white",
