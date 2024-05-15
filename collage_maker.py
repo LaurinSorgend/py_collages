@@ -2,6 +2,8 @@ import argparse
 import os
 import sys
 
+import logging
+
 import numpy as np
 from PIL import Image
 from PIL import ImageDraw, ImageFont
@@ -24,14 +26,13 @@ def create_collage(
         if f.lower().endswith(extensions)
     ]
     loaded_images = [Image.open(image) for image in images]
-
     if not loaded_images:
-        print("No images found in the directory.")
-        return
-
+        logging.error('No images found. stopping.')
+        sys.exit(1)
+    logging.info(f'Making Collage with {len(loaded_images)} Images')
     median_width = int(np.median([img.size[0] for img in loaded_images]))
     median_height = int(np.median([img.size[1] for img in loaded_images]))
-
+    
     border_thickness = 0
     border_color = "white"
 
@@ -42,13 +43,11 @@ def create_collage(
         img.resize((median_width, median_height), Image.Resampling.LANCZOS)
         for img in loaded_images
     ]
-
+    logging.info(f'{border_thickness=}, {border_color=}')
     num_images = len(resized_images)
     if rows and columns:
         if rows * columns < num_images:
-            print(
-                f"Error: The specified rows ({rows}) and columns ({columns}) cannot accommodate all {num_images} images."
-            )
+            logging.error(f"Error: The specified rows ({rows}) and columns ({columns}) cannot accommodate all {num_images} images. stopping.")
             sys.exit(1)
 
     if not rows and not columns:
@@ -60,10 +59,10 @@ def create_collage(
         rows = num_images // columns + (num_images % columns > 0)
     if not columns:
         columns = num_images // rows + (num_images % rows > 0)
-
+    logging.info(f"{columns=}, {rows=}")
     collage_width = median_width * columns + border_thickness * (columns - 1)
     collage_height = median_height * rows + border_thickness * (rows - 1)
-
+    logging.info(f"{collage_width=}, {collage_height=}")
     collage = Image.new("RGB", (collage_width, collage_height), border_color)
 
     x_offset, y_offset = 0, 0
@@ -74,10 +73,12 @@ def create_collage(
                 "arial.ttf", number_font_size
             ) 
             number_str = str(resized_images.index(img) + 1)
-            text_width, text_height = draw.textsize(number_str, font=font)
+            textbox = draw.textbbox(xy=(0,0), text=number_str, font=font)
+            text_width = textbox[2] - textbox[0]
+            text_height = textbox[3] - textbox[1]
             position = (
-                median_width - text_width - 10,
-                median_height - text_height - 10,
+                median_width - text_width - (median_width/50),
+                median_height - text_height - (median_height/30),
             )  
             draw.text(position, number_str, fill=number_color, font=font)
         collage.paste(img, (x_offset, y_offset))
@@ -87,10 +88,13 @@ def create_collage(
             y_offset += median_height + border_thickness
 
     collage.save(os.path.join(folder_path, output_name))
-    print("Collage created successfully.")
+    logging.info("Collage created succesfully. exiting.")
+    sys.exit(0)
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
+    logging.info('Started Main Function')
     parser = argparse.ArgumentParser(
         description="Create a collage from images in a specified folder."
     )
@@ -146,7 +150,7 @@ if __name__ == "__main__":
 
     if not args.output_name.lower().endswith(".jpg"):
         args.output_name += ".jpg"
-
+    logging.info('Parsed args')
     create_collage(
         args.folder_path,
         args.output_name,
