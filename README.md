@@ -3,17 +3,17 @@
 This Python script generates a collage from PNG and JPG images in a specified folder, scaling them to the median size. It allows for customization of the collage layout and the addition of borders between images.
 
 ## Requirements
-- Python 3.x
+- Python 3.x (I use 3.12)
 - Pillow
 - numpy
 
 ## Installation
 
-Clone the repo. Install the Requierments using pip
+Clone the repo. Install the Requierments using pip.
 
 ## Usage
 
-bash collage_maker.py [-h] -i FOLDER_PATH [-o OUTPUT_NAME] [-b THICKNESS COLOR] [-r ROWS] [-c COLUMNS]
+python collage_maker.py [-h] -i FOLDER_PATH [-o OUTPUT_NAME] [-b THICKNESS COLOR] [-r ROWS] [-c COLUMNS]
 
 ### Arguments
 
@@ -39,16 +39,16 @@ bash collage_maker.py [-h] -i FOLDER_PATH [-o OUTPUT_NAME] [-b THICKNESS COLOR] 
 
 Creating a collage with default settings:
 
-collage_maker.py -i /path/to/images
+`collage_maker.py -i /path/to/images`
 
 Creating a collage with a custom output filename:
 
-collage_maker.py -i /path/to/images -o my_custom_collage.jpg
+`collage_maker.py -i /path/to/images -o my_custom_collage.jpg`
 
 Adding a 5px black border between images:
 
-collage_maker.py -i /path/to/images -b 5 black
+`collage_maker.py -i /path/to/images -b 5 black`
 
 Specifying a custom layout with 2 rows:
 
-collage_maker.py -i /path/to/images -r 2
+`collage_maker.py -i /path/to/images -r 2`
