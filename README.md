@@ -9,7 +9,7 @@ This Python script generates a collage from PNG and JPG images in a specified fo
 
 ## Installation
 
-Clone the repo. Install the Requierments using pip.
+Clone the repo. Install the requirements using pip (or conda).
 
 ## Usage
 
