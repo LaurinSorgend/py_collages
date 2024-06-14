@@ -36,6 +36,7 @@ def create_collage(
         logging.error("No images found. stopping.")
         sys.exit(1)
     logging.info(f"Making Collage with {len(loaded_images)} Images")
+
     # print(overwrite_img_heigth, overwrite_img_width)
     if overwrite_img_width == 0:
         median_width = int(np.median([img.size[0] for img in loaded_images]))
