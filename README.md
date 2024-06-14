@@ -9,32 +9,38 @@ This Python script generates a collage from PNG and JPG images in a specified fo
 
 ## Installation
 
-Clone the repo. Install the Requierments using pip.
+Clone the repo. Install the requirements using pip (or conda).
 
 ## Usage
 
-python collage_maker.py [-h] -i FOLDER_PATH [-o OUTPUT_NAME] [-b THICKNESS COLOR] [-r ROWS] [-c COLUMNS]
 
 ### Arguments
+```
+usage: collage_maker.py [-h] -i FOLDER_PATH [-o OUTPUT_NAME] [-b THICKNESS COLOR] [-r ROWS] [-c COLUMNS] [-n] [-fs NUMBER_FONT_SIZE] [-nc NUMBER_COLOR] [-oiw OVERWRITE_IMG_WIDTH] [-oih OVERWRITE_IMG_HEIGTH]
 
-- `-h, --help`  
-  Show the help message and exit.
+Create a collage from images in a specified folder.
 
-- `-i FOLDER_PATH, --input FOLDER_PATH`  
-  **Required.** Path to the folder containing images.
-
-- `-o OUTPUT_NAME, --output_name OUTPUT_NAME`  
-  Name of the output collage image file. Default is 'collage.jpg'.
-
-- `-b THICKNESS COLOR, --border THICKNESS COLOR`  
-  Optional. Add a border between images with specified thickness (in pixels or percentage, e.g., '5' or '2%%') and color (e.g., 'black', '#FFF').
-
-- `-r ROWS, --rows ROWS`  
-  Optional. Custom number of rows for the collage.
-
-- `-c COLUMNS, --columns COLUMNS`  
-  Optional. Custom number of columns for the collage.
-
+options:
+  -h, --help            show this help message and exit
+  -i FOLDER_PATH, --input FOLDER_PATH
+                        Path to the folder containing images.
+  -o OUTPUT_NAME, --output_name OUTPUT_NAME
+                        Name of the output collage image file. Default is 'collage.jpg'.
+  -b THICKNESS COLOR, --border THICKNESS COLOR
+                        Add a border between images with specified thickness (in pixels) and color (e.g., 'black', '#FFF').
+  -r ROWS, --rows ROWS  Custom number of rows for the collage.
+  -c COLUMNS, --columns COLUMNS
+                        Custom number of columns for the collage.
+  -n, --number          Enable numbering of images in the collage.
+  -fs NUMBER_FONT_SIZE, --number_font_size NUMBER_FONT_SIZE
+                        Font size for numbering images. Default is 30.
+  -nc NUMBER_COLOR, --number_color NUMBER_COLOR
+                        Color of the numbers. Default is 'white'.
+  -oiw OVERWRITE_IMG_WIDTH, --overwrite_img_width OVERWRITE_IMG_WIDTH
+                        overwrite_img_width
+  -oih OVERWRITE_IMG_HEIGTH, --overwrite_img_heigth OVERWRITE_IMG_HEIGTH
+                        overwrite_img_heigth
+```
 ## Examples
 
 Creating a collage with default settings:
