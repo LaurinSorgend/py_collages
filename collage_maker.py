@@ -18,6 +18,8 @@ def create_collage(
     number_images=False,
     number_font_size=30,
     number_color="white",
+    overwrite_img_width=0,
+    overwrite_img_heigth=0,
 ):
     extensions = (".png", ".jpg", ".jpeg")
     images = [
@@ -27,12 +29,19 @@ def create_collage(
     ]
     loaded_images = [Image.open(image) for image in images]
     if not loaded_images:
-        logging.error('No images found. stopping.')
+        logging.error("No images found. stopping.")
         sys.exit(1)
-    logging.info(f'Making Collage with {len(loaded_images)} Images')
-    median_width = int(np.median([img.size[0] for img in loaded_images]))
-    median_height = int(np.median([img.size[1] for img in loaded_images]))
-    
+    logging.info(f"Making Collage with {len(loaded_images)} Images")
+    print (overwrite_img_heigth, overwrite_img_width)
+    if overwrite_img_width == 0:
+        median_width = int(np.median([img.size[0] for img in loaded_images]))
+    else:
+        median_width = overwrite_img_width
+    if overwrite_img_heigth == 0:
+        median_height = int(np.median([img.size[1] for img in loaded_images]))
+    else:
+        median_height = overwrite_img_heigth
+
     border_thickness = 0
     border_color = "white"
 
@@ -43,11 +52,13 @@ def create_collage(
         img.resize((median_width, median_height), Image.Resampling.LANCZOS)
         for img in loaded_images
     ]
-    logging.info(f'{border_thickness=}, {border_color=}')
+    logging.info(f"{border_thickness=}, {border_color=}")
     num_images = len(resized_images)
     if rows and columns:
         if rows * columns < num_images:
-            logging.error(f"Error: The specified rows ({rows}) and columns ({columns}) cannot accommodate all {num_images} images. stopping.")
+            logging.error(
+                f"Error: The specified rows ({rows}) and columns ({columns}) cannot accommodate all {num_images} images. stopping."
+            )
             sys.exit(1)
 
     if not rows and not columns:
@@ -69,17 +80,15 @@ def create_collage(
     for img in resized_images:
         if number_images:
             draw = ImageDraw.Draw(img)
-            font = ImageFont.truetype(
-                "arial.ttf", number_font_size
-            ) 
+            font = ImageFont.truetype("arial.ttf", number_font_size)
             number_str = str(resized_images.index(img) + 1)
-            textbox = draw.textbbox(xy=(0,0), text=number_str, font=font)
+            textbox = draw.textbbox(xy=(0, 0), text=number_str, font=font)
             text_width = textbox[2] - textbox[0]
             text_height = textbox[3] - textbox[1]
             position = (
-                median_width - text_width - (median_width/50),
-                median_height - text_height - (median_height/30),
-            )  
+                median_width - text_width - (median_width / 50),
+                median_height - text_height - (median_height / 30),
+            )
             draw.text(position, number_str, fill=number_color, font=font)
         collage.paste(img, (x_offset, y_offset))
         x_offset += median_width + border_thickness
@@ -94,7 +103,7 @@ def create_collage(
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
-    logging.info('Started Main Function')
+    logging.info("Started Main Function")
     parser = argparse.ArgumentParser(
         description="Create a collage from images in a specified folder."
     )
@@ -146,11 +155,23 @@ if __name__ == "__main__":
         default="white",
         help="Color of the numbers. Default is 'white'.",
     )
+    parser.add_argument(
+        "-oiw",
+        "--overwrite_img_width",
+        type=int,
+        help="overwrite_img_width",
+    )
+    parser.add_argument(
+        "-oih",
+        "--overwrite_img_heigth",
+        type=int,
+        help="overwrite_img_heigth",
+    )
     args = parser.parse_args()
 
     if not args.output_name.lower().endswith(".jpg"):
         args.output_name += ".jpg"
-    logging.info('Parsed args')
+    logging.info("Parsed args")
     create_collage(
         args.folder_path,
         args.output_name,
@@ -160,4 +181,6 @@ if __name__ == "__main__":
         args.number,
         args.number_font_size,
         args.number_color,
+        args.overwrite_img_width,
+        args.overwrite_img_heigth,
     )
