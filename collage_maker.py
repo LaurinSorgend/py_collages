@@ -9,8 +9,18 @@ from PIL import Image
 from PIL import ImageDraw, ImageFont
 
 
+def get_images(folder_path):
+    extensions = (".png", ".jpg", ".jpeg")
+    images = [
+        os.path.join(folder_path, f)
+        for f in os.listdir(folder_path)
+        if f.lower().endswith(extensions)
+    ]
+    return images
+
+
 def create_collage(
-    folder_path,
+    images,
     output_name="collage.jpg",
     border_args=None,
     rows=None,
@@ -21,18 +31,12 @@ def create_collage(
     overwrite_img_width=0,
     overwrite_img_heigth=0,
 ):
-    extensions = (".png", ".jpg", ".jpeg")
-    images = [
-        os.path.join(folder_path, f)
-        for f in os.listdir(folder_path)
-        if f.lower().endswith(extensions)
-    ]
     loaded_images = [Image.open(image) for image in images]
     if not loaded_images:
         logging.error("No images found. stopping.")
         sys.exit(1)
     logging.info(f"Making Collage with {len(loaded_images)} Images")
-    print (overwrite_img_heigth, overwrite_img_width)
+    print(overwrite_img_heigth, overwrite_img_width)
     if overwrite_img_width == 0:
         median_width = int(np.median([img.size[0] for img in loaded_images]))
     else:
@@ -96,9 +100,10 @@ def create_collage(
             x_offset = 0
             y_offset += median_height + border_thickness
 
-    collage.save(os.path.join(folder_path, output_name))
-    logging.info("Collage created succesfully. exiting.")
-    sys.exit(0)
+    # collage.save(os.path.join(folder_path, output_name))
+    # logging.info("Collage created succesfully. exiting.")
+    # sys.exit(0)
+    return collage
 
 
 if __name__ == "__main__":
@@ -172,8 +177,8 @@ if __name__ == "__main__":
     if not args.output_name.lower().endswith(".jpg"):
         args.output_name += ".jpg"
     logging.info("Parsed args")
-    create_collage(
-        args.folder_path,
+    collage = create_collage(
+        get_images(args.folder_path),
         args.output_name,
         args.border,
         args.rows,
@@ -184,3 +189,6 @@ if __name__ == "__main__":
         args.overwrite_img_width,
         args.overwrite_img_heigth,
     )
+    collage.save(os.path.join(args.folder_path, args.output_name))
+    logging.info("Collage created succesfully. exiting.")
+    sys.exit(0)
